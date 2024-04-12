@@ -46,29 +46,45 @@ def add_user():
     logging.info(message)
     return jsonify({'message': message, 'username': username}), 200
 
-@app.route('users/<username>', methods=['GET'])
+#Log in
+@app.route('/users/<username>', methods=['GET'])
 def get_passwords(username):
     password = request.args.get('password')
     if not username in users:
         message = f'Username doesn\'t exist'
         logging.error(message)
         return jsonify({'error': message}), 400
-    if not (verifyMasterPassword(password, users[username]['hasedPassword'])):
+    if not (verifyMasterPassword(password, users[username]['hashedPassword'])):
         message = f'Password incorrect'
         logging.error(message)
-        return jsonify({'error': message}), 400
+        return jsonify({'error': message, 'password': password,'passoword': users[username]['hashedPassword'].hexdigest(), 'p': encryptMasterPassword(password).hexdigest(), 'p2': verifyMasterPassword(password, users[username]['hashedPassword']) }), 400
 
     global passwords
     global key
-    key = users['key']
+    key = users[username]['key']
     passwords = users[username]['passwords']
     message = f"User '{username} signed succesfully'."
     logging.info(message)
     return jsonify({'message': message, 'username': username}), 200
 
+#Log out
+@app.route('/users/<username>/logout', methods=['GET'])
+def get_logout(username):
+    global key
+    global passwords
+    if not key:
+        message = f'User hasn\'t signed'
+        logging.error(message)
+        return jsonify({'error': message}), 400
+    key = None
+    passwords = {}
+    message = f"User '{username} logout succesfully'."
+    logging.info(message)
+    return jsonify({'message': message, 'username': username}), 200
+
 # Create (Add) a new password with a keyword
-@app.route('users/<username>/passwords', methods=['POST'])
-def add_password():
+@app.route('/users/<username>/passwords', methods=['POST'])
+def add_password(username):
     data = request.get_json()
     keyword = data.get('keyword')
     length = data.get('length')
@@ -93,13 +109,14 @@ def add_password():
 
     password = random_password(length, lowercase, uppercase, digits, punctuation)
     passwords[keyword] = encryptPassword(key,password)
+    users[username]["passwords"]= passwords
     message = f"Password added successfully for keyword '{keyword}'."
     logging.info(message)
     return jsonify({'message': message, 'keyword': keyword}), 200
 
 # Read (Retrieve) a password by keyword
-@app.route('users/<username>/passwords/<keyword>', methods=['GET'])
-def get_password(keyword):
+@app.route('/users/<username>/passwords/<keyword>', methods=['GET'])
+def get_password(username, keyword):
     if keyword not in passwords:
         message = f"Keyword '{keyword}' not found."
         logging.error(message)
@@ -114,8 +131,8 @@ def get_password(keyword):
     return jsonify({'keyword': keyword, 'password': decryptPassword(key, passwords[keyword])})
 
 # Update an existing password by keyword
-@app.route('users/<username>/passwords/<keyword>', methods=['PUT'])
-def update_password(keyword):
+@app.route('/users/<username>/passwords/<keyword>', methods=['PUT'])
+def update_password(username, keyword):
     data = request.get_json()
     length = data.get('length')
     lowercase = data.get('lowercase')
@@ -138,13 +155,14 @@ def update_password(keyword):
     
     password = random_password(length, lowercase, uppercase, digits, punctuation)
     passwords[keyword] = encryptPassword(key, password)
+    users[username]["passwords"]= passwords
     message = f"Password updated successfully for keyword '{keyword}'."
     logging.info(message)
     return jsonify({'message': message, 'keyword': keyword}), 200
 
 # Delete a password by keyword
-@app.route('users/<username>/passwords/<keyword>', methods=['DELETE'])
-def delete_password(keyword):
+@app.route('/users/<username>/passwords/<keyword>', methods=['DELETE'])
+def delete_password(username, keyword):
     if keyword not in passwords:
         message = f"Keyword '{keyword}' not found."
         logging.error(message)
@@ -156,6 +174,7 @@ def delete_password(keyword):
         return jsonify({'error': message}), 400
 
     del passwords[keyword]
+    users[username]["passwords"]= passwords
     message = f"Password deleted successfully for keyword '{keyword}'."
     logging.info(message)
     return jsonify({'message': message, 'keyword': keyword})

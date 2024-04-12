@@ -1,34 +1,46 @@
 from flask import Flask, request, jsonify
+from password_generator import random_password
+import logging
 
+# Configure logging
+logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 app = Flask(__name__)
 
 passwords = {}
 
-# Generate a password with specified character types and length
-def generate_password():
-    password = "1aA."
-    return password
-
 @app.route('/')
 def index():
     return 'Hello, World!'
+
+@app.errorhandler(500)
+def server_error(error):
+    logging.exception('An exception occurred during a request.')
+    return 'Internal Server Error', 500
 
 # Create (Add) a new password with a keyword
 @app.route('/passwords', methods=['POST'])
 def add_password():
     data = request.get_json()
     keyword = data.get('keyword')
+    length = data.get('length')
+    lowercase = data.get('lowercase')
+    uppercase = data.get('uppercase')
+    digits = data.get('digits')
+    punctuation = data.get('punctuation')
 
-    if not keyword:
-        message = f'Keyword is required.'
+    if not (keyword and length and lowercase and uppercase and digits and punctuation) :
+        message = f'Keyword, length, lowercase, uppercase, digits, and punctuation fields are required.'
+        logging.error(message)
         return jsonify({'error': message}), 400
     if keyword in passwords:
         message = f"Keyword '{keyword}' already exists."
+        logging.error(message)
         return jsonify({'error': message}), 400
     
-    password = generate_password()
+    password = random_password(length, lowercase, uppercase, digits, punctuation)
     passwords[keyword] = password
     message = f"Password added successfully for keyword '{keyword}'."
+    logging.info(message)
     return jsonify({'message': message, 'keyword': keyword}), 200
 
 # Read (Retrieve) a password by keyword
@@ -36,23 +48,36 @@ def add_password():
 def get_password(keyword):
     if keyword not in passwords:
         message = f"Keyword '{keyword}' not found."
+        logging.error(message)
         return jsonify({'error': message}), 404
     
     message = f"Password retrieved successfully for keyword '{keyword}'."
+    logging.info(message)
     return jsonify({'keyword': keyword, 'password': passwords[keyword]})
 
 # Update an existing password by keyword
 @app.route('/passwords/<keyword>', methods=['PUT'])
 def update_password(keyword):
     data = request.get_json()
+    length = data.get('length')
+    lowercase = data.get('lowercase')
+    uppercase = data.get('uppercase')
+    digits = data.get('digits')
+    punctuation = data.get('punctuation')
 
+    if not (keyword and length and lowercase and uppercase and digits and punctuation) :
+        message = f'Keyword, length, lowercase, uppercase, digits, and punctuation fields are required.'
+        logging.error(message)
+        return jsonify({'error': message}), 400
     if keyword not in passwords:
         message = f"Keyword '{keyword}' not found."
+        logging.error(message)
         return jsonify({'error': message}), 404
 
-    password = generate_password()
+    password = random_password(length, lowercase, uppercase, digits, punctuation)
     passwords[keyword] = password
     message = f"Password updated successfully for keyword '{keyword}'."
+    logging.info(message)
     return jsonify({'message': message, 'keyword': keyword}), 200
 
 # Delete a password by keyword
@@ -60,10 +85,12 @@ def update_password(keyword):
 def delete_password(keyword):
     if keyword not in passwords:
         message = f"Keyword '{keyword}' not found."
+        logging.error(message)
         return jsonify({'error': message}), 404
 
     del passwords[keyword]
     message = f"Password deleted successfully for keyword '{keyword}'."
+    logging.info(message)
     return jsonify({'message': message, 'keyword': keyword})
 
 if __name__ == '__main__':

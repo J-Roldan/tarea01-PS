@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from password_generator import random_password
+from password_encrypt import generateKey, encryptPassword, decryptPassword
 import logging
 
 # Configure logging
@@ -7,6 +8,12 @@ logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s 
 app = Flask(__name__)
 
 passwords = {}
+
+""" 
+Add a User login to get a key meanwhile the key is random
+"""
+key = generateKey()
+
 
 @app.route('/')
 def index():
@@ -38,7 +45,7 @@ def add_password():
         return jsonify({'error': message}), 400
     
     password = random_password(length, lowercase, uppercase, digits, punctuation)
-    passwords[keyword] = password
+    passwords[keyword] = encryptPassword(key,password)
     message = f"Password added successfully for keyword '{keyword}'."
     logging.info(message)
     return jsonify({'message': message, 'keyword': keyword}), 200
@@ -53,7 +60,7 @@ def get_password(keyword):
     
     message = f"Password retrieved successfully for keyword '{keyword}'."
     logging.info(message)
-    return jsonify({'keyword': keyword, 'password': passwords[keyword]})
+    return jsonify({'keyword': keyword, 'password': decryptPassword(key, passwords[keyword])})
 
 # Update an existing password by keyword
 @app.route('/passwords/<keyword>', methods=['PUT'])
@@ -75,7 +82,7 @@ def update_password(keyword):
         return jsonify({'error': message}), 404
 
     password = random_password(length, lowercase, uppercase, digits, punctuation)
-    passwords[keyword] = password
+    passwords[keyword] = encryptPassword(key, password)
     message = f"Password updated successfully for keyword '{keyword}'."
     logging.info(message)
     return jsonify({'message': message, 'keyword': keyword}), 200

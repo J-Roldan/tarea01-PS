@@ -11,12 +11,7 @@ app = Flask(__name__)
 # users = {username: {hashedPassword, key, passwords={}}}
 users = {}
 passwords = {}
-
-""" 
-Add a User login to get a key meanwhile the key is random
-"""
-key = generateKey()
-
+key = None
 
 @app.route('/')
 def index():
@@ -64,13 +59,15 @@ def get_passwords(username):
         return jsonify({'error': message}), 400
 
     global passwords
+    global key
+    key = users['key']
     passwords = users[username]['passwords']
     message = f"User '{username} signed succesfully'."
     logging.info(message)
     return jsonify({'message': message, 'username': username}), 200
 
 # Create (Add) a new password with a keyword
-@app.route('/passwords', methods=['POST'])
+@app.route('users/<username>/passwords', methods=['POST'])
 def add_password():
     data = request.get_json()
     keyword = data.get('keyword')
@@ -88,7 +85,12 @@ def add_password():
         message = f"Keyword '{keyword}' already exists."
         logging.error(message)
         return jsonify({'error': message}), 400
-    
+    if not key:
+        message = f'User doesn\'t logged'
+        logging.error(message)
+        return jsonify({'error': message}), 400
+
+
     password = random_password(length, lowercase, uppercase, digits, punctuation)
     passwords[keyword] = encryptPassword(key,password)
     message = f"Password added successfully for keyword '{keyword}'."
@@ -96,19 +98,23 @@ def add_password():
     return jsonify({'message': message, 'keyword': keyword}), 200
 
 # Read (Retrieve) a password by keyword
-@app.route('/passwords/<keyword>', methods=['GET'])
+@app.route('users/<username>/passwords/<keyword>', methods=['GET'])
 def get_password(keyword):
     if keyword not in passwords:
         message = f"Keyword '{keyword}' not found."
         logging.error(message)
         return jsonify({'error': message}), 404
-    
+    if not key:
+        message = f'User doesn\'t logged'
+        logging.error(message)
+        return jsonify({'error': message}), 400
+
     message = f"Password retrieved successfully for keyword '{keyword}'."
     logging.info(message)
     return jsonify({'keyword': keyword, 'password': decryptPassword(key, passwords[keyword])})
 
 # Update an existing password by keyword
-@app.route('/passwords/<keyword>', methods=['PUT'])
+@app.route('users/<username>/passwords/<keyword>', methods=['PUT'])
 def update_password(keyword):
     data = request.get_json()
     length = data.get('length')
@@ -125,7 +131,11 @@ def update_password(keyword):
         message = f"Keyword '{keyword}' not found."
         logging.error(message)
         return jsonify({'error': message}), 404
-
+    if not key:
+        message = f'User doesn\'t logged'
+        logging.error(message)
+        return jsonify({'error': message}), 400
+    
     password = random_password(length, lowercase, uppercase, digits, punctuation)
     passwords[keyword] = encryptPassword(key, password)
     message = f"Password updated successfully for keyword '{keyword}'."
@@ -133,12 +143,17 @@ def update_password(keyword):
     return jsonify({'message': message, 'keyword': keyword}), 200
 
 # Delete a password by keyword
-@app.route('/passwords/<keyword>', methods=['DELETE'])
+@app.route('users/<username>/passwords/<keyword>', methods=['DELETE'])
 def delete_password(keyword):
     if keyword not in passwords:
         message = f"Keyword '{keyword}' not found."
         logging.error(message)
         return jsonify({'error': message}), 404
+
+    if not key:
+        message = f'User doesn\'t logged'
+        logging.error(message)
+        return jsonify({'error': message}), 400
 
     del passwords[keyword]
     message = f"Password deleted successfully for keyword '{keyword}'."

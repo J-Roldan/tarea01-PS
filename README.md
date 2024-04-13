@@ -14,9 +14,15 @@ A continuación se presentan ejemplos que demuestran cómo se interactúa usando
 
 ### POST Method
 ```bash
-curl -X POST -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """length""": 12, """lowercase""": true, """uppercase""": true, """digits""": true, """punctuation""": true}" http://localhost:5000/passwords
+curl -X POST -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """length""": 12, """lowercase""": true, """uppercase""": true, """digits""": true, """punctuation""": true}" http://localhost:5000/passwords?random=true
 ```
 Método para agregar contraseña. Se debe ingresar todos los campos que aparecen para generar correctamente una contraseña.
+
+### POST Method
+```bash
+curl -X POST -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """password""":"""password"""}" http://localhost:5000/passwords?random=false
+```
+Método para agregar contraseña. Se debe ingresar todos los campos que aparecen para agregar correctamente una contraseña.
 
 ### GET Method
 ```bash
@@ -26,7 +32,13 @@ Método para obtener contraseña. Se debe otorgar palabra clave ya existente par
 
 ### PUT Method
 ```bash
-curl -X PUT -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """length""": 12, """lowercase""": true, """uppercase""": true, """digits""": true, """punctuation""": true}" http://localhost:5000/passwords/secret
+curl -X PUT -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """length""": 12, """lowercase""": true, """uppercase""": true, """digits""": true, """punctuation""": true}" http://localhost:5000/passwords/secret?random=true
+```
+Método para actualizar contraseña. Se debe ingresar todos los campos que aparecen para actualizar correctamente una contraseña a una aleatoria.
+
+### PUT Method
+```bash
+curl -X PUT -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """password""": """password"""}" http://localhost:5000/passwords/secret?random=false
 ```
 Método para actualizar contraseña. Se debe ingresar todos los campos que aparecen para actualizar correctamente una contraseña.
 

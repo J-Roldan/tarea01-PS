@@ -16,7 +16,7 @@ user, password, secret son variables usadas a manera de ejemplo.
 
 ### POST Method
 ```bash
-curl -x POST -H 'Content-Type: application/json' -d '{"""username""": """user""", """password""": """password""" }' http://localhost:5000/users 
+curl -X POST -H "Content-Type: application/json" -d "{"""username""": """user""", """password""": """password"""}"  http://localhost:5000/users
 ```
 Método para agregar usuarios. Se deben ingresar ambos campos para generar un usuario
 
@@ -52,13 +52,13 @@ Método para obtener contraseña. Se debe otorgar palabra clave ya existente par
 
 ### PUT Method
 ```bash
-curl -X PUT -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """length""": 12, """lowercase""": true, """uppercase""": true, """digits""": true, """punctuation""": true}" http://localhost:5000/users/user/passwords/?random=true
+curl -X PUT -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """length""": 12, """lowercase""": true, """uppercase""": true, """digits""": true, """punctuation""": true}" http://localhost:5000/users/user/passwords/secret?random=true
 ```
 Método para actualizar contraseña. Se debe ingresar todos los campos que aparecen para actualizar correctamente una contraseña a una aleatoria.
 
 ### PUT Method
 ```bash
-curl -X PUT -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """password""": """password"""}" http://localhost:5000/users/user/passwords/?random=false
+curl -X PUT -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """password""": """password"""}" http://localhost:5000/users/user/passwords/secret?random=false
 ```
 Método para actualizar contraseña. Se debe ingresar todos los campos que aparecen para actualizar correctamente una contraseña.
 

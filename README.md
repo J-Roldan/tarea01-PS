@@ -16,6 +16,24 @@ user, password, secret son variables usadas a manera de ejemplo.
 
 ### POST Method
 ```bash
+curl -x POST -H 'Content-Type: application/json' -d '{"username": "user", "password": "password" }' http://localhost:5000/users 
+```
+Método para agregar usuarios. Se deben ingresar ambos campos para generar un usuario
+
+### GET Method
+```bash
+curl http://localhost:5000//users/user?password=password
+```
+Método para iniciar sesion.
+
+### GET Method
+```bash
+curl http://localhost:5000/users/user/logout
+```
+Método para cerrar sesion.
+
+### POST Method
+```bash
 curl -X POST -H "Content-Type: application/json" -d "{"""keyword""": """secret""", """length""": 12, """lowercase""": true, """uppercase""": true, """digits""": true, """punctuation""": true}" http://localhost:5000/users/user/passwords?random=true
 ```
 Método para agregar contraseña. Se debe ingresar todos los campos que aparecen para generar correctamente una contraseña.

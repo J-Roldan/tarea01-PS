@@ -85,29 +85,41 @@ def get_logout(username):
 # Create (Add) a new password with a keyword
 @app.route('/users/<username>/passwords', methods=['POST'])
 def add_password(username):
+    random = request.args.get('random')
     data = request.get_json()
     keyword = data.get('keyword')
-    length = data.get('length')
-    lowercase = data.get('lowercase')
-    uppercase = data.get('uppercase')
-    digits = data.get('digits')
-    punctuation = data.get('punctuation')
+    if (random.lower() == 'true'):
+        length = data.get('length')
+        lowercase = data.get('lowercase')
+        uppercase = data.get('uppercase')
+        digits = data.get('digits')
+        punctuation = data.get('punctuation')
 
-    if not (keyword and length and lowercase and uppercase and digits and punctuation) :
-        message = f'Keyword, length, lowercase, uppercase, digits, and punctuation fields are required.'
-        logging.error(message)
-        return jsonify({'error': message}), 400
+        if not (keyword and length and lowercase and uppercase and digits and punctuation) :
+            message = f'Keyword, length, lowercase, uppercase, digits, and punctuation fields are required.'
+            logging.error(message)
+            return jsonify({'error': message}), 400
+
+
+        password = random_password(length, lowercase, uppercase, digits, punctuation)
+    else:
+        password = data.get('password')
+
+        if not (keyword and password) :
+            message = f'Keyword and password fields are required.'
+            logging.error(message)
+            return jsonify({'error': message}), 400
+
+
     if keyword in passwords:
-        message = f"Keyword '{keyword}' already exists."
-        logging.error(message)
-        return jsonify({'error': message}), 400
+            message = f"Keyword '{keyword}' already exists."
+            logging.error(message)
+            return jsonify({'error': message}), 400
     if not key:
         message = f'User doesn\'t logged'
         logging.error(message)
         return jsonify({'error': message}), 400
-
-
-    password = random_password(length, lowercase, uppercase, digits, punctuation)
+        
     passwords[keyword] = encryptPassword(key,password)
     users[username]["passwords"]= passwords
     message = f"Password added successfully for keyword '{keyword}'."
@@ -133,27 +145,40 @@ def get_password(username, keyword):
 # Update an existing password by keyword
 @app.route('/users/<username>/passwords/<keyword>', methods=['PUT'])
 def update_password(username, keyword):
+    random = request.args.get('random')
     data = request.get_json()
-    length = data.get('length')
-    lowercase = data.get('lowercase')
-    uppercase = data.get('uppercase')
-    digits = data.get('digits')
-    punctuation = data.get('punctuation')
+    keyword = data.get('keyword')
+    if (random.lower() == 'true'):
+        length = data.get('length')
+        lowercase = data.get('lowercase')
+        uppercase = data.get('uppercase')
+        digits = data.get('digits')
+        punctuation = data.get('punctuation')
 
-    if not (keyword and length and lowercase and uppercase and digits and punctuation) :
-        message = f'Keyword, length, lowercase, uppercase, digits, and punctuation fields are required.'
+        if not (keyword and length and lowercase and uppercase and digits and punctuation) :
+            message = f'Keyword, length, lowercase, uppercase, digits, and punctuation fields are required.'
+            logging.error(message)
+            return jsonify({'error': message}), 400
+
+
+        password = random_password(length, lowercase, uppercase, digits, punctuation)
+    else:
+        password = data.get('password')
+        
+        if not (keyword and password) :
+            message = f'Keyword and password fields are required.'
+            logging.error(message)
+            return jsonify({'error': message}), 400
+
+    if keyword in passwords:
+        message = f"Keyword '{keyword}' already exists."
         logging.error(message)
         return jsonify({'error': message}), 400
-    if keyword not in passwords:
-        message = f"Keyword '{keyword}' not found."
-        logging.error(message)
-        return jsonify({'error': message}), 404
     if not key:
         message = f'User doesn\'t logged'
         logging.error(message)
         return jsonify({'error': message}), 400
-    
-    password = random_password(length, lowercase, uppercase, digits, punctuation)
+        
     passwords[keyword] = encryptPassword(key, password)
     users[username]["passwords"]= passwords
     message = f"Password updated successfully for keyword '{keyword}'."

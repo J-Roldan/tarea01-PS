@@ -170,10 +170,6 @@ def update_password(username, keyword):
             logging.error(message)
             return jsonify({'error': message}), 400
 
-    if keyword in passwords:
-        message = f"Keyword '{keyword}' already exists."
-        logging.error(message)
-        return jsonify({'error': message}), 400
     if not key:
         message = f'User doesn\'t logged'
         logging.error(message)

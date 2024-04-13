@@ -1,18 +1,21 @@
 # tarea01-PS
 
-## Requerimiento
+## Nombres
 
-"Mypass": Escribir un programa que permita a los usuarios almacenar y gestionar contraseñas de forma segura en línea de comandos, con opciones para agregar, recuperar, actualizar y eliminar contraseñas. Se podrá entregar información adicional a cada contraseña para facilitar la busqueda al usuario, por ejemplo una palabra clave. El almacenamiento de la contraseña debe ser seguro. 
-Las claves son almacenadas de manera encriptada con la libreria Fernet y una key generada al momento.
-La clave Maestra es encriptada con un HASH MD5
+- Gastón Quevedo
+- Jorge Roldán
 
-Adicionalmente la solución tendrá una módulo "Generador de Contraseñas": Crear una herramienta que genere contraseñas seguras y las muestre en línea de comandos, permitiendo a los usuarios especificar la longitud y los caracteres permitidos. 
-Se generan claves con un largo designado por el usuario y los elementos permitidos por este.
+## Descripción
 
-## Instrucciones para interacción con línea de comandos
-A continuación se presentan ejemplos que demuestran cómo se interactúa usando la línea de comandos.Ojo: Solo ejecutable en CMD
+Es un gestor de contraseñas implementado con metodos CRUD y manejado a traves de la CMD de Windows
 
-user, password, secret son variables usadas a manera de ejemplo.
+## Instalación
+
+Requiere la instalación de las librerias cryptography, Flask.
+
+## Cómo usar
+
+Requiere CMD. A continuación se muestran los comandos de uso para el gestor de contraseñas. Se usan como ejemplo las siguientes variables: user, password, secret las cuales son username, masterpassword y keyword respectivamente.
 
 ### POST Method
 ```bash
@@ -67,3 +70,31 @@ Método para actualizar contraseña. Se debe ingresar todos los campos que apare
 curl -X DELETE http://localhost:5000/users/user/passwords/secret
 ```
 Método para eliminar contraseña. Se debe otorgar palabra clave ya existente para funcionar correctamente.
+
+##Cómo contribuir
+
+Pendiente
+
+##Licencia
+
+MIT License
+
+Copyright (c) 2024 Gastón Quevedo - Jorge Roldán
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

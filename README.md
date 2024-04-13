@@ -71,11 +71,16 @@ curl -X DELETE http://localhost:5000/users/user/passwords/secret
 ```
 Método para eliminar contraseña. Se debe otorgar palabra clave ya existente para funcionar correctamente.
 
-##Cómo contribuir
+## Cómo contribuir
+Para contribuir al proyecto para arreglar bugs o agregar funciones, seguir los siguientes pasos:
 
-Pendiente
+1. Hacer un "fork" al repositorio
+2. Crear una rama o "branch" para tu "feature" o "bug fix": 'git checkout -b feature-name'
+3. Hacer tus cambios junto a un "commit": 'git commit - "Add some feature"'
+4. "Push" la rama o "brabch": 'git push origin feature-name'
+5. Subir una "pull request"
 
-##Licencia
+## Licencia
 
 MIT License
 
